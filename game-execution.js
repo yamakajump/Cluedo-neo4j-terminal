@@ -18,8 +18,6 @@ async function executeGame(driver) {
 
         while (true) { // Boucle infinie pour les tours
             const currentPlayer = players[currentPlayerIndex];
-            console.log(`C'est au tour de ${currentPlayer.name} (${currentPlayer.type}).`);
-
             // Étape 1 : Déplacement du joueur (automatisé pour les bots)
             const currentRoom = await getCurrentRoom(session, currentPlayer.name);
             const newRoom = currentPlayer.type === 'bot'
@@ -38,6 +36,10 @@ async function executeGame(driver) {
 
             // Étape 4 : Révéler une carte ou mémoriser pour les bots
             await handleHypothesis(session, currentPlayer, selectedPlayer, selectedWeapon, selectedCharacter, newRoom, botMemory);
+
+            // Si le joueur est un bot on laisse le temps de lire
+            readlineSync.question('Appuyez sur Entrée pour passer au prochain joueur...');
+            console.clear();
 
             // Passer au joueur suivant
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
@@ -113,6 +115,8 @@ function isRoom(card) {
 }
 
 async function handleMovement(session, player, currentRoom, players, allCharacters, allWeapons, allRooms) {
+    console.clear();
+    console.log(`C'est au tour de ${player.name} (${player.type}).`);
     console.log(`${player.name} est actuellement dans la pièce ${currentRoom}.`);
 
     const availableRoomsResult = await session.run(
@@ -173,6 +177,9 @@ async function handleBotMovement(session, player, currentRoom) {
 }
 
 async function makeHypothesis(session, player, room, players, allCharacters, allWeapons, allRooms) {
+    console.clear();
+    console.log(`C'est au tour de ${player.name} (${player.type}).`);
+
     const weapons = await getElements(session, 'Arme');
     const characters = await getElements(session, 'Personnage');
 
@@ -211,6 +218,8 @@ async function filterKnownPossessions(session, playerName, items, type) {
 }
 
 async function makeChoiceWithCardsOption(session, player, options, message, players, allCharacters, allWeapons, allRooms) {
+    console.clear();
+    console.log(`C'est au tour de ${player.name} (${player.type}).`);
     while (true) {
         const extendedOptions = ['Voir mes cartes', 'Voir mon carnet de détective', ...options];
         const choice = readlineSync.keyInSelect(extendedOptions, message, { cancel: false });
@@ -228,6 +237,9 @@ async function makeChoiceWithCardsOption(session, player, options, message, play
 
 
 async function choosePlayerToAsk(session, currentPlayer, players, currentPlayerIndex) {
+    console.clear();
+    console.log(`C'est au tour de ${currentPlayer.name} (${currentPlayer.type}).`);
+
     const otherPlayers = players.filter((_, index) => index !== currentPlayerIndex);
     const playerNames = otherPlayers.map(player => player.name);
     const choice = readlineSync.keyInSelect(playerNames, 'Choisissez à quel joueur poser la question :', { cancel: false });
@@ -270,6 +282,9 @@ async function handleHypothesis(session, currentPlayer, selectedPlayer, selected
             console.log(`${selectedPlayer.name} (bot) montre la carte ${revealedCard}.`);
             await createPossessionLink(session, currentPlayer.name, selectedPlayer.name, revealedCard);
         } else {
+            readlineSync.question(`${selectedPlayer.name} doit montrer une de ses cartes.\nAppuyez sur Entrée pour continuer...`);
+            console.clear();
+
             const cardChoice = readlineSync.keyInSelect(cardsToReveal, `${selectedPlayer.name} possède plusieurs cartes, laquelle voulez-vous montrer ?`, { cancel: false });
             const revealedCard = cardsToReveal[cardChoice];
             console.log(`${selectedPlayer.name} montre la carte ${revealedCard}.`);

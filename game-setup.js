@@ -33,6 +33,7 @@ async function setupGame(driver) {
         const maxPlayers = allCharacters.length;
         let numHumanPlayers = 0;
         
+        console.clear();
         // Demander le nombre de joueurs humains
         while (numHumanPlayers < 1 || numHumanPlayers > maxPlayers) {
             numHumanPlayers = readlineSync.questionInt(`Combien y a-t-il de joueurs humains ? (Entre 1 et ${maxPlayers}) : `);
@@ -49,6 +50,7 @@ async function setupGame(driver) {
         const minTotalPlayers = 2;
         const maxTotalPlayers = maxPlayers;
 
+        console.clear();
         // Construire un message dynamique pour le nombre de bots
         while (true) {
             let botMessage = `Combien de bots voulez-vous ? (Entre 0 et ${availableSlotsForBots}) : `;
@@ -77,6 +79,7 @@ async function setupGame(driver) {
         const remainingCharacters = [...allCharacters];  // Liste des personnages à distribuer
 
         for (let i = 0; i < numHumanPlayers; i++) {
+            console.clear();
             let playerName = '';
 
             // Valider le nom du joueur : entre 4 et 16 caractères, et non déjà pris
